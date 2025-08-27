@@ -1,3 +1,5 @@
+const SELECT_ALL_RASHI_QUERY_SELECTOR = ".text_rashi_dh, .line_rashi > .seg";
+
 async function getSettings() {
   return await chrome.storage.sync.get(["openAIApiKey","geminiApiKey", "tooltipColor", "fontSize"]);
 }
@@ -116,17 +118,31 @@ async function translateSimulate(text) {
 
 // Main function: attach hover and click to Rashi groups
 function addHover() {
-  const dhSpans = document.querySelectorAll(".text_rashi_dh:not([data-highlighted])");
-  dhSpans.forEach(dhSpan => {
-    dhSpan.setAttribute("data-highlighted", "true");
+  const spans = Array.from(document.querySelectorAll(SELECT_ALL_RASHI_QUERY_SELECTOR));
+  console.log("Found dh and segs:", spans);
+
+  const filtered = [];
+  let lastWasDh = false;
+  for (const span of spans) {
+    const isDh = span.classList.contains("text_rashi_dh");
+    const isSeg = span.classList.contains("seg");
+    if (!(isDh && lastWasDh) && !isSeg) {
+      filtered.push(span);
+    }
+    lastWasDh = isDh;
+  }
+  console.log("reduced dh:", filtered);
+
+  filtered.forEach((dhSpan,index) => {
 
     const group = [];
     let el = dhSpan;
+    const nextInFiltered = filtered[index + 1] || null;
     while (el) {
       // Stop if we reach tosafot
       if (el.id === "tosafot" || el.closest("#tosafot")) break;
       // Stop before the next dh span, except the starting element
-      if (el !== dhSpan && el.classList.contains("text_rashi_dh")) break;
+      if (el === nextInFiltered) break;
       group.push(el);
       // Move to the next element in document order
       el = el.nextElementSibling || getNextFromParent(el);
@@ -163,5 +179,13 @@ function addHover() {
 addHover();
 
 // Observe dynamic content
-const observer = new MutationObserver(addHover);
+const observer = new MutationObserver((mutations, obs) => {
+  const spans = Array.from(document.querySelectorAll(SELECT_ALL_RASHI_QUERY_SELECTOR));
+  if (spans.length > 0) {
+    console.log("Found rashi", spans);
+    obs.disconnect();
+    addHover(spans);
+  }
+});
+
 observer.observe(document.body, { childList: true, subtree: true });
