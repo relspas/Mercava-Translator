@@ -1,0 +1,15 @@
+{
+  "manifest_version": 3,
+  "name": "Rashi Translator",
+  "version": "1.0",
+  "description": "Translate Rashi on themercava",
+  "content_scripts": [
+    {
+      "matches": ["https://themercava.com/*","https://www.themercava.com/*"], 
+      "js": ["content.js"],
+      "css": ["styles.css"]
+    }
+  ],
+  "permissions": ["storage"],
+  "options_page": "options.html"
+}
