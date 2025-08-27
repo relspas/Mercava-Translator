@@ -5,5 +5,7 @@ Translations are done with LLMs.
 
 ## Get Started
 1. Get your own LLM API Key (OpenAI and Gemini supported now)
+    1. OpenAI api key: https://platform.openai.com/api-keys
+    2. Gemini api key: https://aistudio.google.com/app/apikey
 2. Copy API key into chrome extension options page. (switching between LLMs not yet supported)
 3. Use!
