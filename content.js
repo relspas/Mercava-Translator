@@ -27,7 +27,7 @@ async function translateTextOpenAI(text) {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
-      "Authorization": "Bearer "+openAIApiKey // Replace with your key
+      "Authorization": "Bearer "+openAIApiKey
     },
     body: JSON.stringify({
       model: "gpt-4",
@@ -44,7 +44,7 @@ async function translateTextOpenAI(text) {
 async function translateTextGemini(text) {
   const { geminiApiKey } = await getSettings();
   const response = await fetch(
-    "https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash-latest:generateContent?key="+geminiApiKey, // replace API_KEY with your key
+    "https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash-latest:generateContent?key="+geminiApiKey,
     {
       method: "POST",
       headers: {
@@ -123,9 +123,12 @@ function addHover() {
     const group = [];
     let el = dhSpan;
     while (el) {
+      // Stop if we reach tosafot
       if (el.id === "tosafot" || el.closest("#tosafot")) break;
+      // Stop before the next dh span, except the starting element
+      if (el !== dhSpan && el.classList.contains("text_rashi_dh")) break;
       group.push(el);
-      if (el.nextElementSibling && el.nextElementSibling.classList.contains("text_rashi_dh")) break;
+      // Move to the next element in document order
       el = el.nextElementSibling || getNextFromParent(el);
     }
 
@@ -143,9 +146,14 @@ function addHover() {
       //   const text = group.map(e => e.innerText).join(" ");
       //   showTooltipPersistent(el, translateSimulate(text), group);
       // });
+      
+      // el.addEventListener("click", () => {
+      //   const text = group.map(e => e.innerText).join(" ");
+      //   showTooltipPersistent(el, translateTextGemini(text), group);
+      // });
       el.addEventListener("click", () => {
         const text = group.map(e => e.innerText).join(" ");
-        showTooltipPersistent(el, translateTextGemini(text), group);
+        showTooltipPersistent(el, translateTextOpenAI(text), group);
       });
     });
   });
