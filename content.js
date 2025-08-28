@@ -175,16 +175,24 @@ function addHover() {
   });
 }
 
-// Initial run
-addHover();
+// Dual observers. observer runs addHover when rashi populates. observer2 watches for rashi being removed.
+// When rashi is removed, observer2 disconnects and re-enables observer to wait for rashi to reappear.
+const observer2 = new MutationObserver((mutations, obs) => {
+  const spans = Array.from(document.querySelectorAll(".line_rashi"));
+  if (spans.length == 0) {
+    // console.log("Found rashi", spans);
+    obs.disconnect();
+    observer.observe(document.body, { childList: true, subtree: true });
+  }
+});
 
-// Observe dynamic content
 const observer = new MutationObserver((mutations, obs) => {
   const spans = Array.from(document.querySelectorAll(SELECT_ALL_RASHI_QUERY_SELECTOR));
   if (spans.length > 0) {
-    console.log("Found rashi", spans);
+    // console.log("Found rashi", spans);
     obs.disconnect();
     addHover(spans);
+    observer2.observe(document.body, { childList: true, subtree: true });
   }
 });
 
