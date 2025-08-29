@@ -1,7 +1,7 @@
 const SELECT_ALL_RASHI_QUERY_SELECTOR = ".text_rashi_dh, .line_rashi > .seg";
 
 async function getSettings() {
-  return await chrome.storage.sync.get(["openAIApiKey","geminiApiKey", "tooltipColor", "fontSize"]);
+  return await chrome.storage.sync.get(["openAIApiKey","geminiApiKey"]);
 }
 
 // Helper: check if an element is just whitespace
@@ -72,31 +72,68 @@ async function translateTextGemini(text) {
 
 
 // Function to show a tooltip with persistent highlight
-function showTooltipPersistent(el, translationPromise, group) {
+async function showTooltipPersistent(el, translationPromise, group) {
   // Apply persistent highlight
   group.forEach(g => g.classList.add("highlight-clicked"));
 
-  // Create tooltip
+  // Create tooltip container
   const tooltip = document.createElement("div");
   tooltip.className = "rashi-tooltip";
-  tooltip.textContent = "Translating…";
+
+  // --- Dropdown for LLM selection ---
+  const dropdownDiv = document.createElement("div");
+  dropdownDiv.className = "dropdown-container";
+  const dropdown = document.createElement("select");
+  dropdown.className = "llm-selector";
+
+  //which llms are available for this user
+  const llms = []
+  const { openAIApiKey,geminiApiKey } = await getSettings();
+  if (openAIApiKey != "") llms.push("GPT-4", "GPT-3.5");
+  if (geminiApiKey != "") llms.push("Gemini");
+
+  llms.forEach(llm => {
+    const option = document.createElement("option");
+    option.value = llm;
+    option.textContent = llm;
+    dropdown.appendChild(option);
+  });
+
+  // Create the reset button
+  const resetBtn = document.createElement("button");
+  resetBtn.className = "reset-btn";
+  resetBtn.textContent = "↺";
+
+  // --- Translation container ---
+  const translationDiv = document.createElement("div");
+  translationDiv.className = "translation-result";
+  translationDiv.textContent = "Translating…";
+
+  tooltip.appendChild(translationDiv);
   document.body.appendChild(tooltip);
 
+  // Position tooltip
   const rect = el.getBoundingClientRect();
   tooltip.style.top = `${window.scrollY + rect.bottom + 5}px`;
   tooltip.style.left = `${window.scrollX + rect.left}px`;
 
-  // Update tooltip when translation resolves
+  // Handle translation resolution
   translationPromise
     .then(translation => {
       if (document.body.contains(tooltip)) {
-        tooltip.textContent = translation || "[No translation available]";
+        translationDiv.textContent = translation || "[No translation available]";
       }
     })
     .catch(err => {
       console.error("Translation error:", err);
-      if (document.body.contains(tooltip)) tooltip.textContent = "[Translation failed]";
-    });
+      if (document.body.contains(tooltip)) {
+        translationDiv.textContent = "[Translation failed]";
+      }
+    }).then(() => {  
+      dropdownDiv.appendChild(dropdown);
+      dropdownDiv.appendChild(resetBtn);
+      tooltip.appendChild(dropdownDiv);
+    })
 
   // Click outside handler
   function handleClickOutside(event) {
@@ -108,7 +145,39 @@ function showTooltipPersistent(el, translationPromise, group) {
   }
 
   document.addEventListener("mousedown", handleClickOutside);
+
+  // Example: when dropdown changes, log it (replace with API call if needed)
+  function translateGroup() {
+    const text = group.map(e => e.innerText).join(" ");
+    translationDiv.textContent = "Translating…";
+
+    let translationPromise;
+    if (dropdown.value === "GPT-4") {
+      translationPromise = translateTextOpenAI(text);
+    } else if (dropdown.value === "Gemini") {
+      translationPromise = translateTextGemini(text);
+    } else {
+      translationPromise = translateSimulate(text); // fallback/mock
+    }
+
+    translationPromise
+      .then(translation => {
+        if (document.body.contains(tooltip)) {
+          translationDiv.textContent = translation || "[No translation available]";
+        }
+      })
+      .catch(err => {
+        if (document.body.contains(tooltip)) {
+          translationDiv.textContent = "[Translation failed]";
+        }
+      });
+  }
+
+  // Use the shared function in both events
+  dropdown.addEventListener("change", translateGroup);
+  resetBtn.addEventListener("click", translateGroup);
 }
+
 
 // Example translation function returning a promise
 async function translateSimulate(text) {

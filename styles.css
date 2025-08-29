@@ -20,3 +20,38 @@
   max-width: 300px;
   box-shadow: 0 2px 8px rgba(0,0,0,0.3);
 }
+
+/* Dropdown inside tooltip */
+.rashi-tooltip .dropdown-container .llm-selector {
+  /* color: black;  */             /* text color */
+  background-color: #333;    /* same as tooltip */
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  padding: 2px 25px 2px 4px;
+  margin-bottom: 6px;
+  font-size: 14px;
+    cursor: pointer;
+
+}
+
+.rashi-tooltip .dropdown-container .reset-btn {
+  background-color: #333;
+  color: white;
+  border-radius: 6px; /* slightly rounded corners */
+  width: 28px;
+  height: 28px;
+  font-size: 16px;
+  cursor: pointer;
+  /* display: flex;
+  align-items: center;
+  justify-content: center; */
+  padding: 0;
+  transition: all 0.2s ease; /* smooth hover effect */
+}
+
+/* Highlight on hover */
+.rashi-tooltip .dropdown-container .reset-btn:hover {
+  border-color: #fff;       /* change border color */
+  background-color: #444;   /* slightly lighter background */
+  box-shadow: 0 0 5px rgba(255,255,255,0.5); /* subtle glow */
+}

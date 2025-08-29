@@ -3,28 +3,58 @@
   <head>
     <title>Extension Settings</title>
     <style>
-      body { font-family: sans-serif; padding: 20px; }
-      label { display: block; margin: 10px 0 5px; }
-      input, select { width: 100%; padding: 6px; }
-      button { margin-top: 15px; padding: 8px 12px; }
+      body {
+        font-family: sans-serif;
+        padding: 20px;
+        display: flex;
+        justify-content: center;
+      }
+
+      .container {
+        width: 300px; /* adjust width as needed */
+        text-align: center;
+      }
+
+      h1 {
+        text-align: center;
+      }
+
+      label {
+        display: block;
+        margin: 10px 0 5px;
+        text-align: left;
+      }
+
+      input, select {
+        width: 100%;
+        padding: 6px;
+        box-sizing: border-box;
+      }
+
+      button {
+        margin-top: 15px;
+        padding: 8px 12px;
+        width: 100%;
+      }
+
+      #status {
+        margin-top: 10px;
+      }
     </style>
   </head>
   <body>
-    <h1>Settings</h1>
-    <label for="openAIApiKey">OpenAI API Key</label>
-    <input type="password" id="openAIApiKey" placeholder="Enter your API key" />
+    <div class="container">
+      <h1>Settings</h1>
 
-    <label for="geminiApiKey">Gemini API Key</label>
-    <input type="password" id="geminiApiKey" placeholder="Enter your API key" />
+      <label for="openAIApiKey">OpenAI API Key</label>
+      <input type="password" id="openAIApiKey" placeholder="Enter your API key" />
 
-    <label for="tooltipColor">Tooltip Background</label>
-    <input type="color" id="tooltipColor" value="#333333" />
+      <label for="geminiApiKey">Gemini API Key</label>
+      <input type="password" id="geminiApiKey" placeholder="Enter your API key" />
 
-    <label for="fontSize">Tooltip Font Size</label>
-    <input type="number" id="fontSize" value="14" />
-
-    <button id="save">Save</button>
-    <div id="status"></div>
+      <button id="save">Save</button>
+      <div id="status"></div>
+    </div>
 
     <script src="options.js"></script>
   </body>
