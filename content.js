@@ -89,7 +89,7 @@ async function showTooltipPersistent(el, translationPromise, group) {
   //which llms are available for this user
   const llms = []
   const { openAIApiKey,geminiApiKey } = await getSettings();
-  if (openAIApiKey != "") llms.push("GPT-4", "GPT-3.5");
+  if (openAIApiKey != "") llms.push("GPT-4");//, "GPT-3.5");
   if (geminiApiKey != "") llms.push("Gemini");
 
   llms.forEach(llm => {
