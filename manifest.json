@@ -1,15 +1,19 @@
 {
   "manifest_version": 3,
-  "name": "Rashi Translator",
+  "name": "Mercava Translator",
   "version": "1.0",
-  "description": "Translate Rashi on themercava",
+  "description": "AI based Translator for themercava.com",
   "content_scripts": [
     {
       "matches": ["https://themercava.com/*","https://www.themercava.com/*"], 
-      "js": ["content.js"],
-      "css": ["styles.css"]
+      "js": ["src/content.js"],
+      "css": ["src/styles.css"]
     }
   ],
   "permissions": ["storage"],
-  "options_page": "options.html"
+  "options_page": "options/options.html",
+  "icons": {
+    "48": "icons/icon-48.png",
+    "128": "icons/icon-128.png"
+  }
 }
